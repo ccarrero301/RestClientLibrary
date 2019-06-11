@@ -3,7 +3,7 @@ using NUnit.Framework;
 using RestClientSDK.Contracts;
 using RestClientSDK.Implementations;
 
-namespace RestClientSDK.UnitTests
+namespace RestClientSDK.UnitTests.Base
 {
     internal abstract class BaseRestClientTestConfiguration
     {

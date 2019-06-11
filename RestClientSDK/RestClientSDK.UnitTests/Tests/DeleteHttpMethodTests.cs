@@ -1,20 +1,22 @@
 ﻿using System;
 using NUnit.Framework;
 using RestClientSDK.Entities;
+using RestClientSDK.UnitTests.Base;
 
-namespace RestClientSDK.UnitTests
+namespace RestClientSDK.UnitTests.Tests
 {
     [TestFixture]
-    internal sealed class MergeMethodTests : BaseRestClientTestConfiguration
+    internal sealed class DeleteMethodTests : BaseRestClientTestConfiguration
     {
         [Test]
-        public void MergeNotImplementedError()
+        public void DeleteNotImplementedError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
             Assert.ThrowsAsync<NotImplementedException>(async () =>
                 await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Merge, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Delete, false, 1, 1,
+                        HttpStatusCodesWorthRetrying,
                         requestInfo).ConfigureAwait(false));
         }
     }

@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using RestClientSDK.Entities;
+using RestClientSDK.UnitTests.Base;
+using RestClientSDK.UnitTests.Entities;
 
-namespace RestClientSDK.UnitTests
+namespace RestClientSDK.UnitTests.Tests
 {
     [TestFixture]
     internal sealed class PostHttpMethodTests : BaseRestClientTestConfiguration

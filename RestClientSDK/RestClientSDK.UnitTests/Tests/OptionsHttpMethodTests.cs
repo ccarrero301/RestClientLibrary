@@ -1,20 +1,22 @@
 ﻿using System;
 using NUnit.Framework;
 using RestClientSDK.Entities;
+using RestClientSDK.UnitTests.Base;
 
-namespace RestClientSDK.UnitTests
+namespace RestClientSDK.UnitTests.Tests
 {
     [TestFixture]
-    internal sealed class CopyMethodTests : BaseRestClientTestConfiguration
+    internal sealed class OptionsMethodTests : BaseRestClientTestConfiguration
     {
         [Test]
-        public void CopyNotImplementedError()
+        public void OptionsNotImplementedError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
             Assert.ThrowsAsync<NotImplementedException>(async () =>
                 await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Copy, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Options, false, 1, 1,
+                        HttpStatusCodesWorthRetrying,
                         requestInfo).ConfigureAwait(false));
         }
     }
