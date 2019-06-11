@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace RestClientSDK.UnitTests
         }
 
         [Test]
-        public async Task GetBlogPostWithIdOne()
+        public async Task GetBlogPostWithIdOneNoParameters()
         {
             var requestInfo = new RestClientRequest(_baseUri, "posts/1");
 
@@ -40,6 +41,22 @@ namespace RestClientSDK.UnitTests
                 .ConfigureAwait(false);
 
             Assert.IsTrue(post != null);
+            Assert.IsTrue(post.Id == 1);
+        }
+
+        [Test]
+        public async Task GetBlogPostWithIdOneWithUrlSegment()
+        {
+            var uriSegments = new Dictionary<string, string> {{"id", "1"}};
+
+            var requestInfo = new RestClientRequest(_baseUri, "posts/{id}", uriSegments: uriSegments);
+
+            var post = await _restClient
+                .ExecuteWithRetryAsync<Post>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying, requestInfo)
+                .ConfigureAwait(false);
+
+            Assert.IsTrue(post != null);
+            Assert.IsTrue(post.Id == 1);
         }
     }
 }
