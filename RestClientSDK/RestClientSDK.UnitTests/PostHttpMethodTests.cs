@@ -9,12 +9,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class PostHttpMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup()
-        {
-            SetUpConfiguration();
-        }
-
         [Test]
         public async Task CreateBlogPost()
         {

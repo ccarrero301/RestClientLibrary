@@ -7,9 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class MergeMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup() => SetUpConfiguration();
-
         [Test]
         public void MergeNotImplementedError()
         {

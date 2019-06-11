@@ -7,12 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class PatchMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup()
-        {
-            SetUpConfiguration();
-        }
-
         [Test]
         public void PatchNotImplementedError()
         {

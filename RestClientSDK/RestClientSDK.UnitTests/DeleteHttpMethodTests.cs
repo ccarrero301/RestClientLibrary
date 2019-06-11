@@ -7,9 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class DeleteMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup() => SetUpConfiguration();
-
         [Test]
         public void DeleteNotImplementedError()
         {
@@ -17,7 +14,8 @@ namespace RestClientSDK.UnitTests
 
             Assert.ThrowsAsync<NotImplementedException>(async () =>
                 await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Delete, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Delete, false, 1, 1,
+                        HttpStatusCodesWorthRetrying,
                         requestInfo).ConfigureAwait(false));
         }
     }

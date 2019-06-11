@@ -1,14 +1,18 @@
 ﻿using System.Net;
+using NUnit.Framework;
 using RestClientSDK.Contracts;
 using RestClientSDK.Implementations;
 
 namespace RestClientSDK.UnitTests
 {
-    public abstract class BaseRestClientTestConfiguration
+    internal abstract class BaseRestClientTestConfiguration
     {
         protected string BaseUri;
         protected HttpStatusCode[] HttpStatusCodesWorthRetrying;
         protected IRestClient RestClient;
+
+        [SetUp]
+        protected virtual void Setup() => SetUpConfiguration();
 
         protected virtual void SetUpConfiguration()
         {

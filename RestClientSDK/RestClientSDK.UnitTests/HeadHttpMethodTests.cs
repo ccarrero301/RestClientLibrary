@@ -7,9 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class HeadMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup() => SetUpConfiguration();
-
         [Test]
         public void HeadNotImplementedError()
         {

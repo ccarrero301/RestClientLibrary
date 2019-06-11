@@ -7,12 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class PutHttpMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup()
-        {
-            SetUpConfiguration();
-        }
-
         [Test]
         public void DeleteNotImplementedError()
         {

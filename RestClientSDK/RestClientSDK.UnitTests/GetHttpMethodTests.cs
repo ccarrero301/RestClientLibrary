@@ -10,12 +10,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class GetHttpMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup()
-        {
-            SetUpConfiguration();
-        }
-
         [Test]
         public async Task GetAllBlogPostsWithHttpGetMethod()
         {

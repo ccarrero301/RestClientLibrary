@@ -7,9 +7,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class CopyMethodTests : BaseRestClientTestConfiguration
     {
-        [SetUp]
-        public void Setup() => SetUpConfiguration();
-
         [Test]
         public void CopyNotImplementedError()
         {
