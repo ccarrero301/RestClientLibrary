@@ -23,12 +23,12 @@ namespace RestClientSDK.Implementations
             var restResponse = await ExecuteRequestWithRetryPolicyAsync<TResult>(httpMethod, maxRetryAttempts,
                 retryFactor, httpStatusCodesWorthRetrying, client, request).ConfigureAwait(false);
 
-            HandleTransientErrors(restResponse);
+            HandleResponseErrors(restResponse);
 
             return HandleDeserialization(restResponse);
         }
 
-        private static void HandleTransientErrors<TResult>(IRestResponse<TResult> restResponse)
+        private static void HandleResponseErrors<TResult>(IRestResponse<TResult> restResponse)
         {
             if (restResponse.IsSuccessful)
                 return;
