@@ -135,19 +135,19 @@ namespace RestClientSDK.Implementations
                             httpStatusCodesWorthRetrying, () => restClient.ExecutePostTaskAsync<TResult>(restRequest))
                         .ConfigureAwait(false);
                 case HttpMethod.Put:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Delete:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Head:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Options:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Patch:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Merge:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 case HttpMethod.Copy:
-                    throw new NotImplementedException("This methods is not yet implemented");
+                    throw new NotImplementedException("This method is not yet implemented");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);
             }
