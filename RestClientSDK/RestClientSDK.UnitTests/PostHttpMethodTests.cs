@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using RestClientSDK.Contracts;
 using RestClientSDK.Entities;
@@ -34,14 +35,26 @@ namespace RestClientSDK.UnitTests
         [Test]
         public async Task CreateBlogPostWithHttpPostMethod()
         {
-            var requestInfo = new RestClientRequest(_baseUri, "posts");
+            var postToCreate = new Post
+            {
+                Body = "A simple post",
+                Title = "A simple post title",
+                UserId = 1
+            };
+
+            var postToCreateAsJson = JsonConvert.SerializeObject(postToCreate);
+
+            var requestInfo = new RestClientRequest(_baseUri, "posts", bodyAsJson: postToCreateAsJson);
 
             var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<dynamic>(HttpMethod.Post, false, 1, 1, _httpStatusCodesWorthRetrying,
+                .ExecuteWithRetryAsync<Post>(HttpMethod.Post, false, 1, 1, _httpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.Created);
+            Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
+            Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
+            Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
         }
     }
 }
