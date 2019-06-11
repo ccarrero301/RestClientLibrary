@@ -13,7 +13,7 @@ namespace RestClientSDK.Implementations
 {
     public sealed class RestClient : IRestClient
     {
-        public async Task<RestClientResponse<TResult>> ExecuteWithRetryAsync<TResult>(HttpMethod httpMethod,
+        public async Task<RestClientResponse<TResult>> ExecuteWithExponentialRetryAsync<TResult>(HttpMethod httpMethod,
             bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
             RestClientRequest requestInfo)

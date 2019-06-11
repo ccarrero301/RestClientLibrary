@@ -2,38 +2,21 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using RestClientSDK.Contracts;
 using RestClientSDK.Entities;
-using RestClientSDK.Implementations;
 
 namespace RestClientSDK.UnitTests
 {
     [TestFixture]
-    internal sealed class PostHttpMethodTests
+    internal sealed class PostHttpMethodTests : BaseRestClientTestConfiguration
     {
         [SetUp]
         public void Setup()
         {
-            _restClient = new RestClient();
-
-            _baseUri = "jsonplaceholder.typicode.com/";
-
-            _httpStatusCodesWorthRetrying = new[]
-            {
-                HttpStatusCode.RequestTimeout, // 408
-                HttpStatusCode.InternalServerError, // 500
-                HttpStatusCode.BadGateway, // 502
-                HttpStatusCode.ServiceUnavailable, // 503
-                HttpStatusCode.GatewayTimeout // 504
-            };
+            SetUpConfiguration();
         }
 
-        private string _baseUri;
-        private HttpStatusCode[] _httpStatusCodesWorthRetrying;
-        private IRestClient _restClient;
-
         [Test]
-        public async Task CreateBlogPostWithHttpPostMethod()
+        public async Task CreateBlogPost()
         {
             var postToCreate = new Post
             {
@@ -44,10 +27,10 @@ namespace RestClientSDK.UnitTests
 
             var postToCreateAsJson = JsonConvert.SerializeObject(postToCreate);
 
-            var requestInfo = new RestClientRequest(_baseUri, "posts", bodyAsJson: postToCreateAsJson);
+            var requestInfo = new RestClientRequest(BaseUri, "posts", bodyAsJson: postToCreateAsJson);
 
-            var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<Post>(HttpMethod.Post, false, 1, 1, _httpStatusCodesWorthRetrying,
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Post, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
@@ -55,6 +38,18 @@ namespace RestClientSDK.UnitTests
             Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
+            Assert.IsTrue(restClientResponse.Result.Id != default);
+        }
+
+        [Test]
+        public void PostDeserializationError()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "posts");
+
+            Assert.ThrowsAsync<RestClientException>(async () =>
+                await RestClient
+                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Post, false, 1, 1, HttpStatusCodesWorthRetrying,
+                        requestInfo).ConfigureAwait(false));
         }
     }
 }

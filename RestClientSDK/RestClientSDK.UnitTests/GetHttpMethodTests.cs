@@ -3,43 +3,27 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using RestClientSDK.Contracts;
 using RestClientSDK.Entities;
-using RestClientSDK.Implementations;
 
 namespace RestClientSDK.UnitTests
 {
     [TestFixture]
-    internal sealed class GetHttpMethodTests
+    internal sealed class GetHttpMethodTests : BaseRestClientTestConfiguration
     {
         [SetUp]
         public void Setup()
         {
-            _restClient = new RestClient();
-
-            _baseUri = "jsonplaceholder.typicode.com/";
-
-            _httpStatusCodesWorthRetrying = new[]
-            {
-                HttpStatusCode.RequestTimeout, // 408
-                HttpStatusCode.InternalServerError, // 500
-                HttpStatusCode.BadGateway, // 502
-                HttpStatusCode.ServiceUnavailable, // 503
-                HttpStatusCode.GatewayTimeout // 504
-            };
+            SetUpConfiguration();
         }
-
-        private string _baseUri;
-        private HttpStatusCode[] _httpStatusCodesWorthRetrying;
-        private IRestClient _restClient;
 
         [Test]
         public async Task GetAllBlogPostsWithHttpGetMethod()
         {
-            var requestInfo = new RestClientRequest(_baseUri, "posts");
+            var requestInfo = new RestClientRequest(BaseUri, "posts");
 
-            var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<IEnumerable<Post>>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying,
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<IEnumerable<Post>>(HttpMethod.Get, false, 1, 1,
+                    HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
@@ -49,12 +33,13 @@ namespace RestClientSDK.UnitTests
         }
 
         [Test]
-        public async Task GetBlogPostWithIdOneNoParametersWithHttpGetMethod()
+        public async Task GetBlogPostWithNoParameters()
         {
-            var requestInfo = new RestClientRequest(_baseUri, "posts/1");
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
-            var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<Post>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying, requestInfo)
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.Result != null);
@@ -63,14 +48,15 @@ namespace RestClientSDK.UnitTests
         }
 
         [Test]
-        public async Task GetBlogPostWithIdOneWithUrlSegmentWithHttpGetMethod()
+        public async Task GetBlogPostWithUrlSegment()
         {
             var uriSegments = new Dictionary<string, string> {{"id", "1"}};
 
-            var requestInfo = new RestClientRequest(_baseUri, "posts/{id}", uriSegments: uriSegments);
+            var requestInfo = new RestClientRequest(BaseUri, "posts/{id}", uriSegments: uriSegments);
 
-            var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<Post>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying, requestInfo)
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.Result != null);
@@ -79,13 +65,13 @@ namespace RestClientSDK.UnitTests
         }
 
         [Test]
-        public void GetDeserializationErrorWithHttpGetMethod()
+        public void GetDeserializationError()
         {
-            var requestInfo = new RestClientRequest(_baseUri, "posts/1");
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
             Assert.ThrowsAsync<RestClientException>(async () =>
-                await _restClient
-                    .ExecuteWithRetryAsync<bool>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying,
+                await RestClient
+                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
                         requestInfo).ConfigureAwait(false));
         }
     }
