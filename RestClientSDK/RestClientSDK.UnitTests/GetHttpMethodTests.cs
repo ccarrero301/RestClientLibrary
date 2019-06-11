@@ -12,10 +12,6 @@ namespace RestClientSDK.UnitTests
     [TestFixture]
     internal sealed class GetHttpMethodTests
     {
-        private string _baseUri;
-        private HttpStatusCode[] _httpStatusCodesWorthRetrying;
-        private IRestClient _restClient;
-
         [SetUp]
         public void Setup()
         {
@@ -32,6 +28,10 @@ namespace RestClientSDK.UnitTests
                 HttpStatusCode.GatewayTimeout // 504
             };
         }
+
+        private string _baseUri;
+        private HttpStatusCode[] _httpStatusCodesWorthRetrying;
+        private IRestClient _restClient;
 
         [Test]
         public async Task GetAllBlogPostsWithHttpGetMethod()
@@ -79,15 +79,14 @@ namespace RestClientSDK.UnitTests
         }
 
         [Test]
-        public async Task GetBlogDeserializationErrorWithHttpGetMethod()
+        public void GetDeserializationErrorWithHttpGetMethod()
         {
             var requestInfo = new RestClientRequest(_baseUri, "posts/1");
 
-            var restClientResponse = await _restClient
-                .ExecuteWithRetryAsync<bool>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying, requestInfo)
-                .ConfigureAwait(false);
-
-            Assert.IsTrue(restClientResponse.Result);
+            Assert.ThrowsAsync<RestClientException>(async () =>
+                await _restClient
+                    .ExecuteWithRetryAsync<bool>(HttpMethod.Get, false, 1, 1, _httpStatusCodesWorthRetrying,
+                        requestInfo).ConfigureAwait(false));
         }
     }
 }
