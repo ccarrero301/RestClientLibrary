@@ -6,7 +6,7 @@ namespace RestClientSDK.Contracts
 {
     public interface IRestClient
     {
-        Task<TResult> ExecuteWithRetryAsync<TResult>(HttpMethod httpMethod, bool useHttp,
+        Task<RestClientResponse<TResult>> ExecuteWithRetryAsync<TResult>(HttpMethod httpMethod, bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
             RestClientRequest requestInfo);
     }

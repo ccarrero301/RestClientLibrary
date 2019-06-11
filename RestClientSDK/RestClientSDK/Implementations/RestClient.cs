@@ -13,7 +13,8 @@ namespace RestClientSDK.Implementations
 {
     public sealed class RestClient : IRestClient
     {
-        public async Task<TResult> ExecuteWithRetryAsync<TResult>(HttpMethod httpMethod, bool useHttp,
+        public async Task<RestClientResponse<TResult>> ExecuteWithRetryAsync<TResult>(HttpMethod httpMethod,
+            bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
             RestClientRequest requestInfo)
         {
@@ -22,10 +23,36 @@ namespace RestClientSDK.Implementations
             var restResponse = await ExecuteRequestWithRetryPolicyAsync<TResult>(httpMethod, maxRetryAttempts,
                 retryFactor, httpStatusCodesWorthRetrying, client, request).ConfigureAwait(false);
 
-            if (restResponse.IsSuccessful)
-                return JsonConvert.DeserializeObject<TResult>(restResponse.Content);
+            HandleTransientErrors(restResponse);
 
-            throw new Exception(restResponse.Content.Trim('"'));
+            return HandleDeserialization(restResponse);
+        }
+
+        private static void HandleTransientErrors<TResult>(IRestResponse<TResult> restResponse)
+        {
+            if (restResponse.IsSuccessful)
+                return;
+
+            var resClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
+                restResponse.ErrorMessage, restResponse.ErrorException);
+
+            throw new RestClientException(resClientErrorResponse);
+        }
+
+        private static RestClientResponse<TResult> HandleDeserialization<TResult>(IRestResponse<TResult> restResponse)
+        {
+            try
+            {
+                var deserializationResult = JsonConvert.DeserializeObject<TResult>(restResponse.Content);
+                return new RestClientResponse<TResult>(deserializationResult, restResponse.StatusCode);
+            }
+            catch (JsonSerializationException jsonSerializationException)
+            {
+                var restClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
+                    jsonSerializationException.Message, jsonSerializationException);
+
+                throw new RestClientException(restClientErrorResponse);
+            }
         }
 
         private static (RestSharp.IRestClient, IRestRequest) GetRequestConfiguration(HttpMethod httpMethod,
