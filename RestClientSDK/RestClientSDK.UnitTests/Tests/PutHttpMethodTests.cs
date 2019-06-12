@@ -37,5 +37,15 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.Body == postToPut.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToPut.UserId);
         }
+
+        [Test]
+        public void PutDeserializationError()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "posts");
+
+            Assert.ThrowsAsync<RestClientException>(() =>
+                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.PUT, false, 1, 1,
+                    HttpStatusCodesWorthRetrying, requestInfo));
+        }
     }
 }
