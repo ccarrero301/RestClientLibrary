@@ -14,7 +14,7 @@ namespace RestClientSDK.UnitTests.Tests
         [Test]
         public async Task PutBlogPost()
         {
-            var postToPut = new Post
+            var postToPut = new BlogPost
             {
                 Id = 1,
                 Title = "A simple post title",
@@ -27,7 +27,7 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts/1", bodyAsJson: postToCreateAsJson);
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.PUT, false, 1, 1, HttpStatusCodesWorthRetrying,
+                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.PUT, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 

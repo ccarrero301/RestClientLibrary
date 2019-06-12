@@ -1,6 +1,6 @@
 ﻿namespace RestClientSDK.UnitTests.Entities
 {
-    internal sealed class Post
+    internal sealed class BlogPost
     {
         public int UserId { get; set; }
 
