@@ -13,10 +13,9 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
-            Assert.ThrowsAsync<NotImplementedException>(async () =>
-                await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Patch, false, 1, 1, HttpStatusCodesWorthRetrying,
-                        requestInfo).ConfigureAwait(false));
+            Assert.ThrowsAsync<NotImplementedException>(() =>
+                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.PATCH, false, 1, 1,
+                    HttpStatusCodesWorthRetrying, requestInfo));
         }
     }
 }

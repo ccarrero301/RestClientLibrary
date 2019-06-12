@@ -12,12 +12,12 @@ namespace RestClientSDK.UnitTests.Tests
     internal sealed class PostHttpMethodTests : BaseRestClientTestConfiguration
     {
         [Test]
-        public async Task CreateBlogPost()
+        public async Task PostBlogPost()
         {
             var postToCreate = new Post
             {
-                Body = "A simple post",
                 Title = "A simple post title",
+                Body = "A simple post",
                 UserId = 1
             };
 
@@ -26,13 +26,13 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts", bodyAsJson: postToCreateAsJson);
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Post, false, 1, 1, HttpStatusCodesWorthRetrying,
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.POST, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.Created);
-            Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
+            Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
             Assert.IsTrue(restClientResponse.Result.Id != default);
         }
@@ -42,10 +42,9 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
-            Assert.ThrowsAsync<RestClientException>(async () =>
-                await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Post, false, 1, 1, HttpStatusCodesWorthRetrying,
-                        requestInfo).ConfigureAwait(false));
+            Assert.ThrowsAsync<RestClientException>(() =>
+                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.POST, false, 1, 1,
+                    HttpStatusCodesWorthRetrying, requestInfo));
         }
     }
 }

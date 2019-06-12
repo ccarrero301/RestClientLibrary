@@ -18,7 +18,7 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<IEnumerable<Post>>(HttpMethod.Get, false, 1, 1,
+                .ExecuteWithExponentialRetryAsync<IEnumerable<Post>>(HttpMethod.GET, false, 1, 1,
                     HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
@@ -34,7 +34,7 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
@@ -51,7 +51,7 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts/{id}", uriSegments: uriSegments);
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
+                .ExecuteWithExponentialRetryAsync<Post>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
@@ -65,10 +65,9 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
-            Assert.ThrowsAsync<RestClientException>(async () =>
-                await RestClient
-                    .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.Get, false, 1, 1, HttpStatusCodesWorthRetrying,
-                        requestInfo).ConfigureAwait(false));
+            Assert.ThrowsAsync<RestClientException>(() =>
+                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.GET, false, 1, 1,
+                    HttpStatusCodesWorthRetrying, requestInfo));
         }
     }
 }

@@ -126,28 +126,37 @@ namespace RestClientSDK.Implementations
         {
             switch (httpMethod)
             {
-                case HttpMethod.Get:
+                case HttpMethod.GET:
                     return await ExecuteWithRetryPolicyAsync(maxRetryAttempts, retryFactor,
                             httpStatusCodesWorthRetrying, () => restClient.ExecuteGetTaskAsync<TResult>(restRequest))
                         .ConfigureAwait(false);
-                case HttpMethod.Post:
+
+                case HttpMethod.POST:
                     return await ExecuteWithRetryPolicyAsync(maxRetryAttempts, retryFactor,
                             httpStatusCodesWorthRetrying, () => restClient.ExecutePostTaskAsync<TResult>(restRequest))
                         .ConfigureAwait(false);
-                case HttpMethod.Put:
+
+                case HttpMethod.PUT:
+                    return await restClient.ExecuteTaskAsync<TResult>(restRequest).ConfigureAwait(false);
+
+                case HttpMethod.DELETE:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Delete:
+
+                case HttpMethod.HEAD:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Head:
+
+                case HttpMethod.OPTIONS:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Options:
+
+                case HttpMethod.PATCH:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Patch:
+
+                case HttpMethod.MERGE:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Merge:
+
+                case HttpMethod.COPY:
                     throw new NotImplementedException("This method is not yet implemented");
-                case HttpMethod.Copy:
-                    throw new NotImplementedException("This method is not yet implemented");
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);
             }
