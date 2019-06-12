@@ -137,6 +137,7 @@ namespace RestClientSDK.Implementations
                         .ConfigureAwait(false);
 
                 case HttpMethod.PUT:
+                case HttpMethod.PATCH:
                     return await restClient.ExecuteTaskAsync<TResult>(restRequest).ConfigureAwait(false);
 
                 case HttpMethod.DELETE:
@@ -146,9 +147,6 @@ namespace RestClientSDK.Implementations
                     throw new NotImplementedException("This method is not yet implemented");
 
                 case HttpMethod.OPTIONS:
-                    throw new NotImplementedException("This method is not yet implemented");
-
-                case HttpMethod.PATCH:
                     throw new NotImplementedException("This method is not yet implemented");
 
                 case HttpMethod.MERGE:
