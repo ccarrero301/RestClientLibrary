@@ -138,10 +138,8 @@ namespace RestClientSDK.Implementations
 
                 case HttpMethod.PUT:
                 case HttpMethod.PATCH:
-                    return await restClient.ExecuteTaskAsync<TResult>(restRequest).ConfigureAwait(false);
-
                 case HttpMethod.DELETE:
-                    throw new NotImplementedException("This method is not yet implemented");
+                    return await restClient.ExecuteTaskAsync<TResult>(restRequest).ConfigureAwait(false);
 
                 case HttpMethod.HEAD:
                     throw new NotImplementedException("This method is not yet implemented");

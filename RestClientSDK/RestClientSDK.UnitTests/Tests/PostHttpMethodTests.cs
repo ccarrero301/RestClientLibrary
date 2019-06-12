@@ -21,9 +21,9 @@ namespace RestClientSDK.UnitTests.Tests
                 UserId = 1
             };
 
-            var postToCreateAsJson = JsonConvert.SerializeObject(postToCreate);
+            var postToPostAsJson = JsonConvert.SerializeObject(postToCreate);
 
-            var requestInfo = new RestClientRequest(BaseUri, "posts", bodyAsJson: postToCreateAsJson);
+            var requestInfo = new RestClientRequest(BaseUri, "posts", bodyAsJson: postToPostAsJson);
 
             var restClientResponse = await RestClient
                 .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.POST, false, 1, 1, HttpStatusCodesWorthRetrying,
@@ -31,10 +31,10 @@ namespace RestClientSDK.UnitTests.Tests
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.Created);
+            Assert.IsTrue(restClientResponse.Result.Id != default);
             Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
             Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
-            Assert.IsTrue(restClientResponse.Result.Id != default);
         }
 
         [Test]

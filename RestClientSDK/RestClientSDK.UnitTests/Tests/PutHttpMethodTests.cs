@@ -22,9 +22,9 @@ namespace RestClientSDK.UnitTests.Tests
                 UserId = 1
             };
 
-            var postToCreateAsJson = JsonConvert.SerializeObject(postToPut);
+            var postToPutAsJson = JsonConvert.SerializeObject(postToPut);
 
-            var requestInfo = new RestClientRequest(BaseUri, "posts/1", bodyAsJson: postToCreateAsJson);
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1", bodyAsJson: postToPutAsJson);
 
             var restClientResponse = await RestClient
                 .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.PUT, false, 1, 1, HttpStatusCodesWorthRetrying,

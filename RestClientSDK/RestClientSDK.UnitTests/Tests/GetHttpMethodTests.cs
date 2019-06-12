@@ -13,7 +13,7 @@ namespace RestClientSDK.UnitTests.Tests
     internal sealed class GetHttpMethodTests : BaseRestClientTestConfiguration
     {
         [Test]
-        public async Task GetAllBlogPostsWithHttpGetMethod()
+        public async Task GetAllBlogPosts()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
