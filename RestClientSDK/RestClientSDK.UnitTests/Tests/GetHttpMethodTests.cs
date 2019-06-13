@@ -61,6 +61,25 @@ namespace RestClientSDK.UnitTests.Tests
         }
 
         [Test]
+        public async Task GetBlogPostWithHeaderParameter()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
+
+            requestInfo.AddHeader(("TestHeader", "TestHeaderValue"));
+
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
+                .ConfigureAwait(false);
+
+            Assert.IsTrue(restClientResponse.Result != null);
+            Assert.IsTrue(restClientResponse.Result.Id == 1);
+            Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Key == "TestHeader");
+            Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Value == "TestHeaderValue");
+            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
+        }
+
+        [Test]
         public void GetDeserializationError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
