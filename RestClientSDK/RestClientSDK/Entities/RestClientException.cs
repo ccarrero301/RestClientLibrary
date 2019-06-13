@@ -8,6 +8,9 @@ namespace RestClientSDK.Entities
             errorResponse.ErrorException) =>
             ErrorResponse = errorResponse;
 
+        public RestClientException(RestClientErrorResponse errorResponse, Exception innerException) : base(
+            errorResponse.ErrorMessage, innerException) => ErrorResponse = errorResponse;
+
         public RestClientErrorResponse ErrorResponse { get; }
     }
 }

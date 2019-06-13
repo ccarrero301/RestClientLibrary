@@ -28,6 +28,7 @@ namespace RestClientSDK.Implementations
             return HandleDeserialization(restResponse);
         }
 
+        /// <exception cref="T:RestClientSDK.Entities.RestClientException">If something fails with the call or with the serialization.</exception>
         public async Task<RestClientResponse<string>> ExecuteWithExponentialRetryAsync(HttpMethod httpMethod,
             bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
@@ -70,7 +71,7 @@ namespace RestClientSDK.Implementations
                 var restClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
                     jsonSerializationException.Message, jsonSerializationException);
 
-                throw new RestClientException(restClientErrorResponse);
+                throw new RestClientException(restClientErrorResponse, jsonSerializationException);
             }
         }
 
@@ -187,7 +188,8 @@ namespace RestClientSDK.Implementations
             switch (httpMethod)
             {
                 case HttpMethod.HEAD:
-                    return restClient.ExecuteTaskAsync(restRequest);
+                    return ExecuteWithRetryPolicyAsync(maxRetryAttempts, retryFactor, httpStatusCodesWorthRetrying,
+                        () => restClient.ExecuteTaskAsync(restRequest));
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);
@@ -202,11 +204,30 @@ namespace RestClientSDK.Implementations
             return retryPolicy.ExecuteAsync(action);
         }
 
+        private static Task<IRestResponse> ExecuteWithRetryPolicyAsync(int maxRetryAttempts,
+            int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying, Func<Task<IRestResponse>> action)
+        {
+            var retryPolicy = DefineRetryPolicy(maxRetryAttempts, retryFactor, httpStatusCodesWorthRetrying);
+
+            return retryPolicy.ExecuteAsync(action);
+        }
+
         private static AsyncRetryPolicy<IRestResponse<TResult>> DefineRetryPolicy<TResult>(int maxRetryAttempts,
             int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying) =>
             Policy
                 .Handle<Exception>()
                 .OrResult<IRestResponse<TResult>>(restSharpResponse =>
+                    httpStatusCodesWorthRetrying.Contains(restSharpResponse.StatusCode))
+                .WaitAndRetryAsync(
+                    maxRetryAttempts,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(retryFactor, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) => { });
+
+        private static AsyncRetryPolicy<IRestResponse> DefineRetryPolicy(int maxRetryAttempts,
+            int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying) =>
+            Policy
+                .Handle<Exception>()
+                .OrResult<IRestResponse>(restSharpResponse =>
                     httpStatusCodesWorthRetrying.Contains(restSharpResponse.StatusCode))
                 .WaitAndRetryAsync(
                     maxRetryAttempts,
