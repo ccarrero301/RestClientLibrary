@@ -28,6 +28,26 @@ namespace RestClientSDK.Implementations
             return HandleDeserialization(restResponse);
         }
 
+        public async Task<RestClientResponse<string>> ExecuteWithExponentialRetryAsync(HttpMethod httpMethod,
+            bool useHttp,
+            int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
+            RestClientRequest requestInfo)
+        {
+            var (client, request) = GetRequestConfiguration(httpMethod, useHttp, requestInfo);
+
+            var restResponse = await ExecuteRequestWithRetryPolicyAsync(httpMethod, maxRetryAttempts,
+                retryFactor, httpStatusCodesWorthRetrying, client, request).ConfigureAwait(false);
+
+            if(restResponse.IsSuccessful)
+                return new RestClientResponse<string>(string.Empty, restResponse.StatusCode);
+
+            var resClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
+                restResponse.ErrorMessage, restResponse.ErrorException);
+
+            throw new RestClientException(resClientErrorResponse);
+
+        }
+
         private static void HandleResponseErrors<TResult>(IRestResponse<TResult> restResponse)
         {
             if (restResponse.IsSuccessful)
@@ -139,10 +159,12 @@ namespace RestClientSDK.Implementations
                 case HttpMethod.PUT:
                 case HttpMethod.PATCH:
                 case HttpMethod.DELETE:
-                    return await restClient.ExecuteTaskAsync<TResult>(restRequest).ConfigureAwait(false);
+                    return await ExecuteWithRetryPolicyAsync(maxRetryAttempts, retryFactor,
+                            httpStatusCodesWorthRetrying, () => restClient.ExecuteTaskAsync<TResult>(restRequest))
+                        .ConfigureAwait(false);
 
                 case HttpMethod.HEAD:
-                    throw new NotImplementedException("This method is not yet implemented");
+                    throw new NotImplementedException($"This method is not supported. Please use {nameof(IRestClient.ExecuteWithExponentialRetryAsync)}");
 
                 case HttpMethod.OPTIONS:
                     throw new NotImplementedException("This method is not yet implemented");
@@ -152,6 +174,18 @@ namespace RestClientSDK.Implementations
 
                 case HttpMethod.COPY:
                     throw new NotImplementedException("This method is not yet implemented");
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);
+            }
+        }
+
+        private static Task<IRestResponse> ExecuteRequestWithRetryPolicyAsync(HttpMethod httpMethod, int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying, RestSharp.IRestClient restClient, IRestRequest restRequest)
+        {
+            switch (httpMethod)
+            {
+                case HttpMethod.HEAD:
+                    return restClient.ExecuteTaskAsync(restRequest);
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);

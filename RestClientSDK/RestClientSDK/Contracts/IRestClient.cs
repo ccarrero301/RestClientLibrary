@@ -9,5 +9,9 @@ namespace RestClientSDK.Contracts
         Task<RestClientResponse<TResult>> ExecuteWithExponentialRetryAsync<TResult>(HttpMethod httpMethod, bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
             RestClientRequest requestInfo);
+
+        Task<RestClientResponse<string>> ExecuteWithExponentialRetryAsync(HttpMethod httpMethod, bool useHttp,
+            int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
+            RestClientRequest requestInfo);
     }
 }
