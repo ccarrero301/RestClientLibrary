@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using RestClientSDK.Entities;
@@ -25,10 +24,13 @@ namespace RestClientSDK.Implementations
 
             HandleResponseErrors(restResponse);
 
-            return HandleDeserialization(restResponse);
+            return new RestClientResponse<TResult>(restResponse.Data, restResponse.StatusCode);
         }
 
-        /// <exception cref="T:RestClientSDK.Entities.RestClientException">If something fails with the call or with the serialization.</exception>
+        /// <exception cref="T:RestClientSDK.Entities.RestClientException">
+        ///     If something fails with the call or with the
+        ///     serialization.
+        /// </exception>
         public async Task<RestClientResponse<string>> ExecuteWithExponentialRetryAsync(HttpMethod httpMethod,
             bool useHttp,
             int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
@@ -57,22 +59,6 @@ namespace RestClientSDK.Implementations
                 restResponse.ErrorMessage, restResponse.ErrorException);
 
             throw new RestClientException(resClientErrorResponse);
-        }
-
-        private static RestClientResponse<TResult> HandleDeserialization<TResult>(IRestResponse<TResult> restResponse)
-        {
-            try
-            {
-                var deserializationResult = JsonConvert.DeserializeObject<TResult>(restResponse.Content);
-                return new RestClientResponse<TResult>(deserializationResult, restResponse.StatusCode);
-            }
-            catch (JsonSerializationException jsonSerializationException)
-            {
-                var restClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
-                    jsonSerializationException.Message, jsonSerializationException);
-
-                throw new RestClientException(restClientErrorResponse, jsonSerializationException);
-            }
         }
 
         private static (RestSharp.IRestClient, IRestRequest) GetRequestConfiguration(HttpMethod httpMethod,

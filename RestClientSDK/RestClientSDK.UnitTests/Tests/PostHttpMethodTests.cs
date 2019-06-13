@@ -16,6 +16,7 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var postToCreate = new BlogPost
             {
+                Id = 1,
                 Title = "A simple post title",
                 Body = "A simple post",
                 UserId = 1
@@ -31,7 +32,7 @@ namespace RestClientSDK.UnitTests.Tests
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.Created);
-            Assert.IsTrue(restClientResponse.Result.Id != default);
+            Assert.IsTrue(restClientResponse.Result.Id == postToCreate.Id);
             Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
             Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
