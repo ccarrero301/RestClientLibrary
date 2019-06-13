@@ -80,6 +80,24 @@ namespace RestClientSDK.UnitTests.Tests
         }
 
         [Test]
+        public async Task GetBlogPostWithQueryParameter()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "posts");
+
+            requestInfo.AddQueryParameter(("userId", "1"));
+
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<IEnumerable<BlogPost>>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
+                .ConfigureAwait(false);
+
+            Assert.IsTrue(restClientResponse.Result != null);
+            Assert.IsTrue(restClientResponse.Result.Any());
+            Assert.IsTrue(restClientResponse.Result.Count(blogPost => blogPost.UserId == 1) == restClientResponse.Result.Count());
+            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
+        }
+
+        [Test]
         public void GetDeserializationError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
