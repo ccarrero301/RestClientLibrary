@@ -38,14 +38,13 @@ namespace RestClientSDK.Implementations
             var restResponse = await ExecuteRequestWithRetryPolicyAsync(httpMethod, maxRetryAttempts,
                 retryFactor, httpStatusCodesWorthRetrying, client, request).ConfigureAwait(false);
 
-            if(restResponse.IsSuccessful)
+            if (restResponse.IsSuccessful)
                 return new RestClientResponse<string>(string.Empty, restResponse.StatusCode);
 
             var resClientErrorResponse = new RestClientErrorResponse(restResponse.StatusCode, restResponse.Content,
                 restResponse.ErrorMessage, restResponse.ErrorException);
 
             throw new RestClientException(resClientErrorResponse);
-
         }
 
         private static void HandleResponseErrors<TResult>(IRestResponse<TResult> restResponse)
@@ -164,7 +163,8 @@ namespace RestClientSDK.Implementations
                         .ConfigureAwait(false);
 
                 case HttpMethod.HEAD:
-                    throw new NotImplementedException($"This method is not supported. Please use {nameof(IRestClient.ExecuteWithExponentialRetryAsync)}");
+                    throw new NotImplementedException(
+                        $"This method is not supported. Please use {nameof(IRestClient.ExecuteWithExponentialRetryAsync)} with no return type");
 
                 case HttpMethod.OPTIONS:
                     throw new NotImplementedException("This method is not yet implemented");
@@ -180,7 +180,9 @@ namespace RestClientSDK.Implementations
             }
         }
 
-        private static Task<IRestResponse> ExecuteRequestWithRetryPolicyAsync(HttpMethod httpMethod, int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying, RestSharp.IRestClient restClient, IRestRequest restRequest)
+        private static Task<IRestResponse> ExecuteRequestWithRetryPolicyAsync(HttpMethod httpMethod,
+            int maxRetryAttempts, int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying,
+            RestSharp.IRestClient restClient, IRestRequest restRequest)
         {
             switch (httpMethod)
             {
