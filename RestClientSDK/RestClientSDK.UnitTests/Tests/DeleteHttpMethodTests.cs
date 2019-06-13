@@ -42,7 +42,7 @@ namespace RestClientSDK.UnitTests.Tests
         [Test]
         public void PatchDeserializationError()
         {
-            var requestInfo = new RestClientRequest(BaseUri, "posts");
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
             Assert.ThrowsAsync<RestClientException>(() =>
                 RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.DELETE, false, 1, 1,

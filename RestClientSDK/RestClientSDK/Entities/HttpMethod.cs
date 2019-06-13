@@ -8,8 +8,6 @@
         DELETE,
         HEAD,
         OPTIONS,
-        PATCH,
-        MERGE,
-        COPY
+        PATCH
     }
 }

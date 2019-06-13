@@ -37,7 +37,7 @@ namespace RestClientSDK.UnitTests.Tests
         [Test]
         public void HeadDeserializationError()
         {
-            var requestInfo = new RestClientRequest(BaseUri, "posts");
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
             Assert.ThrowsAsync<NotImplementedException>(() =>
                 RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.HEAD, false, 1, 1,
