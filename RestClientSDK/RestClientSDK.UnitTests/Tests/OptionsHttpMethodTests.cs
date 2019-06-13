@@ -32,12 +32,13 @@ namespace RestClientSDK.UnitTests.Tests
                 .ExecuteWithExponentialRetryAsync(HttpMethod.OPTIONS, false, 1, 1, HttpStatusCodesWorthRetrying,
                     requestInfo).ConfigureAwait(false);
 
-            var httpMethodsAllowed = restClientResponse.Headers.FirstOrDefault(entry => entry.Key == "Access-Control-Allow-Methods");
+            var (allowedMethodsKey, allowedMethodsValue) =
+                restClientResponse.Headers.FirstOrDefault(entry => entry.Key == "Access-Control-Allow-Methods");
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.NoContent);
             Assert.IsTrue(string.IsNullOrWhiteSpace(restClientResponse.Result));
-            Assert.IsTrue(httpMethodsAllowed.Key == "Access-Control-Allow-Methods");
-            Assert.IsTrue(!string.IsNullOrWhiteSpace(httpMethodsAllowed.Value));
+            Assert.IsTrue(allowedMethodsKey == "Access-Control-Allow-Methods");
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(allowedMethodsValue));
         }
 
         [Test]

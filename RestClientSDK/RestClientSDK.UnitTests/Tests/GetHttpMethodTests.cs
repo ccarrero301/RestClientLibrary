@@ -29,38 +29,6 @@ namespace RestClientSDK.UnitTests.Tests
         }
 
         [Test]
-        public async Task GetBlogPostWithNoParameters()
-        {
-            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
-
-            var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
-                    requestInfo)
-                .ConfigureAwait(false);
-
-            Assert.IsTrue(restClientResponse.Result != null);
-            Assert.IsTrue(restClientResponse.Result.Id == 1);
-            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
-        }
-
-        [Test]
-        public async Task GetBlogPostWithUrlSegment()
-        {
-            var uriSegments = new Dictionary<string, string> {{"id", "1"}};
-
-            var requestInfo = new RestClientRequest(BaseUri, "posts/{id}", uriSegments: uriSegments);
-
-            var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
-                    requestInfo)
-                .ConfigureAwait(false);
-
-            Assert.IsTrue(restClientResponse.Result != null);
-            Assert.IsTrue(restClientResponse.Result.Id == 1);
-            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
-        }
-
-        [Test]
         public async Task GetBlogPostWithHeaderParameter()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
@@ -80,6 +48,21 @@ namespace RestClientSDK.UnitTests.Tests
         }
 
         [Test]
+        public async Task GetBlogPostWithNoParameters()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "posts/1");
+
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
+                .ConfigureAwait(false);
+
+            Assert.IsTrue(restClientResponse.Result != null);
+            Assert.IsTrue(restClientResponse.Result.Id == 1);
+            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
+        }
+
+        [Test]
         public async Task GetBlogPostWithQueryParameter()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
@@ -87,13 +70,32 @@ namespace RestClientSDK.UnitTests.Tests
             requestInfo.AddQueryParameter(("userId", "1"));
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync<IEnumerable<BlogPost>>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
+                .ExecuteWithExponentialRetryAsync<IEnumerable<BlogPost>>(HttpMethod.GET, false, 1, 1,
+                    HttpStatusCodesWorthRetrying,
                     requestInfo)
                 .ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.Result != null);
             Assert.IsTrue(restClientResponse.Result.Any());
-            Assert.IsTrue(restClientResponse.Result.Count(blogPost => blogPost.UserId == 1) == restClientResponse.Result.Count());
+            Assert.IsTrue(restClientResponse.Result.Count(blogPost => blogPost.UserId == 1) ==
+                          restClientResponse.Result.Count());
+            Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task GetBlogPostWithUrlSegment()
+        {
+            var uriSegments = new Dictionary<string, string> {{"id", "1"}};
+
+            var requestInfo = new RestClientRequest(BaseUri, "posts/{id}", uriSegments: uriSegments);
+
+            var restClientResponse = await RestClient
+                .ExecuteWithExponentialRetryAsync<BlogPost>(HttpMethod.GET, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo)
+                .ConfigureAwait(false);
+
+            Assert.IsTrue(restClientResponse.Result != null);
+            Assert.IsTrue(restClientResponse.Result.Id == 1);
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
         }
 

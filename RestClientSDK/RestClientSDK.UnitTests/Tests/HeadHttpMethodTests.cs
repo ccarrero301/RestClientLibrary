@@ -28,7 +28,8 @@ namespace RestClientSDK.UnitTests.Tests
             var requestInfo = new RestClientRequest(BaseUri, "posts/1", bodyAsJson: postToHeadAsJson);
 
             var restClientResponse = await RestClient
-                .ExecuteWithExponentialRetryAsync(HttpMethod.HEAD, false, 1, 1, HttpStatusCodesWorthRetrying, requestInfo).ConfigureAwait(false);
+                .ExecuteWithExponentialRetryAsync(HttpMethod.HEAD, false, 1, 1, HttpStatusCodesWorthRetrying,
+                    requestInfo).ConfigureAwait(false);
 
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
             Assert.IsTrue(string.IsNullOrWhiteSpace(restClientResponse.Result));
