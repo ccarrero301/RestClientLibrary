@@ -37,6 +37,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.Title == postToCreate.Title);
             Assert.IsTrue(restClientResponse.Result.Body == postToCreate.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -68,6 +69,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.UserId == postToCreate.UserId);
             Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Key == "TestHeader");
             Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Value == "TestHeaderValue");
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -75,9 +77,14 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts");
 
-            Assert.ThrowsAsync<RestClientException>(() =>
-                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.POST, false, 1, 1,
-                    HttpStatusCodesWorthRetrying, requestInfo));
+            var restClientException = Assert.ThrowsAsync<RestClientException>(() => RestClient
+                .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.POST, false, 1,
+                    1, HttpStatusCodesWorthRetrying, requestInfo));
+
+            Assert.IsTrue(restClientException.ErrorResponse.StatusCode == HttpStatusCode.Created);
+            Assert.IsTrue(restClientException.ErrorResponse.ErrorException != null);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(restClientException.ErrorResponse.ErrorMessage));
+            Assert.IsTrue(!string.IsNullOrEmpty(restClientException.ErrorResponse.ResponseContent));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -37,6 +38,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(string.IsNullOrWhiteSpace(restClientResponse.Result.Title));
             Assert.IsTrue(string.IsNullOrWhiteSpace(restClientResponse.Result.Body));
             Assert.IsTrue(restClientResponse.Result.UserId == default);
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]

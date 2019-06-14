@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -36,6 +37,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.Title == postToPatch.Title);
             Assert.IsTrue(restClientResponse.Result.Body == postToPatch.Body);
             Assert.IsTrue(restClientResponse.Result.UserId == postToPatch.UserId);
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -43,9 +45,14 @@ namespace RestClientSDK.UnitTests.Tests
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
-            Assert.ThrowsAsync<RestClientException>(() =>
-                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.PATCH, false, 1, 1,
-                    HttpStatusCodesWorthRetrying, requestInfo));
+            var restClientException = Assert.ThrowsAsync<RestClientException>(() => RestClient
+                .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.PATCH, false, 1,
+                    1, HttpStatusCodesWorthRetrying, requestInfo));
+
+            Assert.IsTrue(restClientException.ErrorResponse.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(restClientException.ErrorResponse.ErrorException != null);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(restClientException.ErrorResponse.ErrorMessage));
+            Assert.IsTrue(!string.IsNullOrEmpty(restClientException.ErrorResponse.ResponseContent));
         }
     }
 }

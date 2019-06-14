@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
+using RestClientSDK.Entities;
 using RestSharp;
 
 namespace RestClientSDK.Utils
@@ -21,7 +22,8 @@ namespace RestClientSDK.Utils
         private static AsyncRetryPolicy<IRestResponse<TResult>> DefineRetryPolicy<TResult>(int maxRetryAttempts,
             int retryFactor, HttpStatusCode[] httpStatusCodesWorthRetrying) =>
             Policy
-                .Handle<Exception>()
+                .Handle<RestClientException>()
+                .Or<Exception>()
                 .OrResult<IRestResponse<TResult>>(restSharpResponse =>
                     httpStatusCodesWorthRetrying.Contains(restSharpResponse.StatusCode))
                 .WaitAndRetryAsync(

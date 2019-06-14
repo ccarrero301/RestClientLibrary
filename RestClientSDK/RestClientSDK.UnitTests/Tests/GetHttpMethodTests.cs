@@ -26,6 +26,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
             Assert.IsTrue(restClientResponse.Result != null);
             Assert.IsTrue(restClientResponse.Result.Any());
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -45,6 +46,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.Id == 1);
             Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Key == "TestHeader");
             Assert.IsTrue(requestInfo.HeaderParameters.FirstOrDefault().Value == "TestHeaderValue");
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -60,6 +62,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
             Assert.IsTrue(restClientResponse.Result != null);
             Assert.IsTrue(restClientResponse.Result.Id == 1);
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -80,6 +83,7 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.Result.Any());
             Assert.IsTrue(restClientResponse.Result.Count(blogPost => blogPost.UserId == 1) ==
                           restClientResponse.Result.Count());
+            Assert.IsTrue(restClientResponse.Headers.Any());
         }
 
         [Test]
@@ -97,16 +101,34 @@ namespace RestClientSDK.UnitTests.Tests
             Assert.IsTrue(restClientResponse.StatusCode == HttpStatusCode.OK);
             Assert.IsTrue(restClientResponse.Result != null);
             Assert.IsTrue(restClientResponse.Result.Id == 1);
+            Assert.IsTrue(restClientResponse.Headers.Any());
+        }
+
+        [Test]
+        public void GetNotExistentResource()
+        {
+            var requestInfo = new RestClientRequest(BaseUri, "carrero");
+
+            var restClientException = Assert.ThrowsAsync<RestClientException>(() => RestClient
+                .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.GET, false, 3,
+                    1, HttpStatusCodesWorthRetrying, requestInfo));
+
+            Assert.IsTrue(restClientException.ErrorResponse.StatusCode == HttpStatusCode.NotFound);
         }
 
         [Test]
         public void GetDeserializationError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
-            
-            Assert.ThrowsAsync<RestClientException>(() =>
-                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.GET, false, 1, 1,
-                    HttpStatusCodesWorthRetrying, requestInfo));
+
+            var restClientException = Assert.ThrowsAsync<RestClientException>(() => RestClient
+                .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.GET, false, 1,
+                    1, HttpStatusCodesWorthRetrying, requestInfo));
+
+            Assert.IsTrue(restClientException.ErrorResponse.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(restClientException.ErrorResponse.ErrorException != null);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(restClientException.ErrorResponse.ErrorMessage));
+            Assert.IsTrue(!string.IsNullOrEmpty(restClientException.ErrorResponse.ResponseContent));
         }
     }
 }
