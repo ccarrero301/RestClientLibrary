@@ -4,10 +4,8 @@
     {
         GET,
         POST,
+        PATCH,
         PUT,
         DELETE,
-        HEAD,
-        OPTIONS,
-        PATCH
     }
 }

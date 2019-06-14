@@ -40,13 +40,20 @@ namespace RestClientSDK.UnitTests.Tests
         }
 
         [Test]
-        public void PatchDeserializationError()
+        public void DeleteDeserializationError()
         {
             var requestInfo = new RestClientRequest(BaseUri, "posts/1");
 
-            Assert.ThrowsAsync<RestClientException>(() =>
-                RestClient.ExecuteWithExponentialRetryAsync<bool>(HttpMethod.DELETE, false, 1, 1,
-                    HttpStatusCodesWorthRetrying, requestInfo));
+            var restClientException = Assert.ThrowsAsync<RestClientException>(() => RestClient
+                .ExecuteWithExponentialRetryAsync<bool>(HttpMethod.DELETE, false, 1,
+                    1, HttpStatusCodesWorthRetrying, requestInfo));
+
+            var responseContent = restClientException.ErrorResponse.ResponseContent.Replace("{", "").Replace("}", "");
+
+            Assert.IsTrue(restClientException.ErrorResponse.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(restClientException.ErrorResponse.ErrorException != null);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(restClientException.ErrorResponse.ErrorMessage));
+            Assert.IsTrue(string.IsNullOrEmpty(responseContent));
         }
     }
 }
